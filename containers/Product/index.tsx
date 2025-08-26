@@ -8,6 +8,7 @@ import { Star } from "lucide-react";
 import { useCart } from "@/context/cartContext";
 import { useTheme } from "@/context/themeContext";
 import Loader from "./Loader";
+import NoData from "./NoData";
 
 const ProductDetailPage = () => {
     const { id } = useParams();
@@ -29,8 +30,9 @@ const ProductDetailPage = () => {
             <Loader />
         );
     if (!data) {
-        return null;
+        return <NoData onRefresh={() => fetchData({})} />
     }
+
     return (
         <div className={`min-h-screen pt-20 pb-10 transition-colors duration-300 ${theme === "dark" ? "bg-gray-900" : "bg-gray-100"}`}>
             <div className={`max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-12 rounded-2xl shadow-lg transition-colors duration-300 
