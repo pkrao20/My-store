@@ -1,3 +1,4 @@
+'use client'
 import { Product, sortOrder } from "@/constant/types";
 import { useApi } from "./useApi";
 import useFilters from "./useFilters";

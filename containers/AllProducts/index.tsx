@@ -1,10 +1,7 @@
 'use client';
 import ProductCard from '@/components/Product/Product';
-import { allProductsData } from '@/constant/dummydata';
-import { Product } from '@/constant/types';
 import { useTheme } from '@/context/themeContext';
 import { useAllProducts } from '@/hooks/useAllProducts';
-import { useApi } from '@/hooks/useApi';
 import useFilters from '@/hooks/useFilters';
 import getQueryFromFilter from '@/utils/getQueryFromFilters';
 import { useEffect } from 'react';

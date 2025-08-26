@@ -7,6 +7,7 @@ import Image from "next/image";
 import { Star } from "lucide-react";
 import { useCart } from "@/context/cartContext";
 import { useTheme } from "@/context/themeContext";
+import Loader from "./Loader";
 
 const ProductDetailPage = () => {
     const { id } = useParams();
@@ -23,13 +24,13 @@ const ProductDetailPage = () => {
         fetchData({});
     }, []);
 
-    if (loading || !data)
+    if (loading && !data)
         return (
-            <div className={`flex justify-center items-center min-h-screen ${theme === "dark" ? "bg-gray-900" : "bg-gray-100"}`}>
-                <p className={`text-lg ${theme === "dark" ? "text-gray-300" : "text-gray-600"}`}>Loading product...</p>
-            </div>
+            <Loader />
         );
-
+    if (!data) {
+        return null;
+    }
     return (
         <div className={`min-h-screen pt-20 pb-10 transition-colors duration-300 ${theme === "dark" ? "bg-gray-900" : "bg-gray-100"}`}>
             <div className={`max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 gap-12 rounded-2xl shadow-lg transition-colors duration-300 
