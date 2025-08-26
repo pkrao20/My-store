@@ -4,7 +4,7 @@ import { useApi } from "@/hooks/useApi";
 import { useParams } from "next/navigation";
 import React, { useEffect } from "react";
 import Image from "next/image";
-import { Star } from "lucide-react";
+import { Star, Plus, Minus } from "lucide-react";
 import { useCart } from "@/context/cartContext";
 import { useTheme } from "@/context/themeContext";
 import Loader from "./Loader";
@@ -18,20 +18,20 @@ const ProductDetailPage = () => {
             method: "GET",
         },
     });
-    const { addToCart } = useCart();
+
+    const { addToCart,items, incrementQuantity, decrementQuantity } = useCart();
     const { theme } = useTheme();
 
     useEffect(() => {
         fetchData({});
     }, []);
 
-    if (loading && !data)
-        return (
-            <Loader />
-        );
-    if (!data) {
-        return <NoData onRefresh={() => fetchData({})} />
-    }
+    const cartItem = items.find(item => item.id === Number(id));
+
+    if (loading && !data) return <Loader />;
+
+    if (!data && !loading) return <NoData onRefresh={() => fetchData({})} />;
+    if(!data) return null;
 
     return (
         <div className={`min-h-screen pt-20 pb-10 transition-colors duration-300 ${theme === "dark" ? "bg-gray-900" : "bg-gray-100"}`}>
@@ -92,16 +92,38 @@ const ProductDetailPage = () => {
                         {data.description}
                     </p>
 
-                    {/* Add to Cart Button */}
-                    <button
-                        onClick={() => addToCart(data, 1)}
-                        className={`py-3 px-6 rounded-xl font-semibold shadow-md transition-all w-full sm:w-auto
-                            ${theme === "dark"
-                                ? "bg-indigo-500 hover:bg-indigo-600 text-white"
-                                : "bg-indigo-600 hover:bg-indigo-700 text-white"}`}
-                    >
-                        Add to Cart
-                    </button>
+                    {/* Cart Controls */}
+                    <div className="flex items-center gap-4">
+                        {cartItem && (
+                            <div className="flex items-center gap-3 border rounded-xl px-4 py-2 shadow-md">
+                                <button
+                                    onClick={() => decrementQuantity(cartItem.id)}
+                                    className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 cursor-pointer" 
+                                >
+                                    <Minus className="w-4 h-4" />
+                                </button>
+                                <span className={`text-lg font-semibold ${theme === "dark" ? "text-white" : "text-gray-900"}`}>
+                                    {cartItem.quantity}
+                                </span>
+                                <button
+                                    onClick={() => incrementQuantity(cartItem.id)}
+                                    className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 cursor-pointer"
+                                >
+                                    <Plus className="w-4 h-4" />
+                                </button>
+                            </div>
+                        )}
+
+                        <button
+                            onClick={() => addToCart(data, 1)}
+                            className={`py-3 px-4 rounded-xl font-semibold shadow-md transition-all
+                                ${theme === "dark"
+                                    ? "bg-indigo-500 hover:bg-indigo-600 text-white"
+                                    : "bg-indigo-600 hover:bg-indigo-700 text-white"}`}
+                        >
+                            Add to Cart
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

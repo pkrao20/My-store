@@ -15,6 +15,8 @@ type CartContextType = {
     addToCart: (product: Product, qty?: number) => void;
     removeFromCart: (id: Product["id"]) => void;
     clearCart: () => void;
+    incrementQuantity: (id: Product["id"]) => void;
+    decrementQuantity: (id: Product["id"]) => void;
     count: number;
 };
 
@@ -26,13 +28,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         if (typeof window === "undefined") return [];
         try {
             const raw = localStorage.getItem(LS_KEY);
-                return raw ? (JSON.parse(raw) as CartItem[]) : [];
+            return raw ? (JSON.parse(raw) as CartItem[]) : [];
         } catch {
             return [];
         }
     });
 
-    // write-through persistence
+    // Persist to localStorage
     useEffect(() => {
         try {
             localStorage.setItem(LS_KEY, JSON.stringify(items));
@@ -65,10 +67,30 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
     const clearCart = () => setItems([]);
 
+    // New: increment quantity by 1
+    const incrementQuantity = (id: Product["id"]) => {
+        setItems(prev =>
+            prev.map(item =>
+                item.id === id ? { ...item, quantity: item.quantity + 1 } : item
+            )
+        );
+    };
+
+    // New: decrement quantity by 1 (remove if quantity reaches 0)
+    const decrementQuantity = (id: Product["id"]) => {
+        setItems(prev =>
+            prev
+                .map(item =>
+                    item.id === id ? { ...item, quantity: item.quantity - 1 } : item
+                )
+                .filter(item => item.quantity > 0)
+        );
+    };
+
     const count = useMemo(() => items.reduce((s, it) => s + it.quantity, 0), [items]);
 
     const value = useMemo(
-        () => ({ items, addToCart, removeFromCart, clearCart, count }),
+        () => ({ items, addToCart, removeFromCart, clearCart, incrementQuantity, decrementQuantity, count }),
         [items, count]
     );
 
